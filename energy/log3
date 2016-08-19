@@ -1,0 +1,52 @@
+Step    1 Energy 19.70 SENSORS Lights 0.92 0.49 Warn 0.00 Motors 1.00 1.00
+Step    2 Energy 19.40 SENSORS Lights 0.91 0.28 Warn 0.00 Motors 1.00 1.00
+Step    3 Energy 19.10 SENSORS Lights 0.93 0.30 Warn 0.00 Motors 1.00 1.00
+Step    4 Energy 18.80 SENSORS Lights 0.87 0.31 Warn 0.00 Motors 1.00 1.00
+Step    5 Energy 18.50 SENSORS Lights 0.86 0.31 Warn 0.00 Motors 1.00 1.00
+Step    6 Energy 18.20 SENSORS Lights 0.85 0.31 Warn 0.00 Motors 1.00 1.00
+Step    7 Energy 17.90 SENSORS Lights 0.78 0.24 Warn 0.00 Motors 1.00 1.00
+Step    8 Energy 17.60 SENSORS Lights 0.73 0.24 Warn 0.00 Motors 1.00 1.00
+Step    9 Energy 17.30 SENSORS Lights 0.70 0.21 Warn 0.00 Motors 1.00 1.00
+Step   10 Energy 17.00 SENSORS Lights 0.64 0.15 Warn 0.00 Motors 1.00 1.00
+Step   11 Energy 16.70 SENSORS Lights 0.53 0.15 Warn 0.00 Motors 1.00 1.00
+Step   12 Energy 16.40 SENSORS Lights 0.52 0.16 Warn 0.00 Motors 1.00 1.00
+Step   13 Energy 16.10 SENSORS Lights 0.45 0.15 Warn 0.00 Motors 1.00 1.00
+Step   14 Energy 15.80 SENSORS Lights 0.47 0.15 Warn 0.00 Motors 1.00 1.00
+Step   15 Energy 15.50 SENSORS Lights 0.37 0.15 Warn 0.00 Motors 1.00 0.98
+Step   16 Energy 15.20 SENSORS Lights 0.37 0.14 Warn 0.00 Motors 1.00 0.98
+Step   17 Energy 14.90 SENSORS Lights 0.34 0.14 Warn 0.00 Motors 1.00 0.97
+Step   18 Energy 14.60 SENSORS Lights 0.33 0.14 Warn 0.00 Motors 1.00 0.96
+Step   19 Energy 14.30 SENSORS Lights 0.30 0.09 Warn 0.00 Motors 1.00 0.97
+Step   20 Energy 14.00 SENSORS Lights 0.28 0.09 Warn 0.00 Motors 1.00 0.95
+Step   21 Energy 13.70 SENSORS Lights 0.24 0.08 Warn 0.00 Motors 1.00 0.92
+Step   22 Energy 13.40 SENSORS Lights 0.23 0.08 Warn 0.00 Motors 1.00 0.90
+Step   23 Energy 13.10 SENSORS Lights 0.23 0.07 Warn 0.00 Motors 1.00 0.91
+Step   24 Energy 12.80 SENSORS Lights 0.20 0.07 Warn 0.00 Motors 1.00 0.87
+Step   25 Energy 12.50 SENSORS Lights 0.19 0.07 Warn 0.00 Motors 1.00 0.85
+Step   26 Energy 12.20 SENSORS Lights 0.18 0.06 Warn 0.00 Motors 0.99 0.82
+Step   27 Energy 11.90 SENSORS Lights 0.16 0.06 Warn 0.00 Motors 0.99 0.78
+Step   28 Energy 11.60 SENSORS Lights 0.16 0.06 Warn 0.00 Motors 0.99 0.78
+Step   29 Energy 11.30 SENSORS Lights 0.16 0.06 Warn 0.00 Motors 0.99 0.77
+Robot stalled
+Trial ended
+Step   68 Energy 19.70 SENSORS Lights 0.68 0.41 Warn 0.00 Motors 1.00 1.00
+Step   69 Energy 19.40 SENSORS Lights 0.64 0.16 Warn 0.00 Motors 1.00 1.00
+Step   70 Energy 19.10 SENSORS Lights 0.53 0.15 Warn 0.00 Motors 1.00 1.00
+Step   71 Energy 18.80 SENSORS Lights 0.52 0.15 Warn 0.00 Motors 1.00 1.00
+Step   72 Energy 18.50 SENSORS Lights 0.46 0.15 Warn 0.00 Motors 1.00 1.00
+Step   73 Energy 18.20 SENSORS Lights 0.47 0.15 Warn 0.00 Motors 1.00 1.00
+Step   74 Energy 17.90 SENSORS Lights 0.38 0.13 Warn 0.00 Motors 1.00 0.99
+Step   75 Energy 17.60 SENSORS Lights 0.32 0.15 Warn 0.00 Motors 1.00 0.95
+Step   76 Energy 17.30 SENSORS Lights 0.25 0.13 Warn 0.00 Motors 1.00 0.88
+Step   77 Energy 17.00 SENSORS Lights 0.24 0.14 Warn 0.00 Motors 1.00 0.85
+Step   78 Energy 16.70 SENSORS Lights 0.20 0.14 Warn 0.00 Motors 1.00 0.73
+Step   79 Energy 16.40 SENSORS Lights 0.21 0.13 Warn 0.00 Motors 1.00 0.74
+Step   80 Energy 16.10 SENSORS Lights 0.19 0.14 Warn 0.00 Motors 1.00 0.66
+Step   81 Energy 15.80 SENSORS Lights 0.14 0.13 Warn 0.00 Motors 1.00 0.38
+Robot stalled
+Trial ended
+Step  135 Energy 19.70 SENSORS Lights 0.22 0.32 Warn 0.00 Motors 1.00 -0.05
+Robot stalled
+Trial ended
+Survived 201 steps, ate 0 food
+Fitness 0.188437
