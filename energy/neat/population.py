@@ -43,8 +43,8 @@ class Population(object):
     def __resume_checkpoint(self, checkpoint):
         """ Resumes the simulation from a previous saved point. """
         try:
-            #file = open(checkpoint)
-            file = gzip.open(checkpoint)
+            file = open(checkpoint)
+            #file = gzip.open(checkpoint)
         except IOError:
             raise
         print 'Resuming from a previous point: %s' %checkpoint
@@ -256,6 +256,176 @@ class Population(object):
     def epoch(self, n, report=True, save_best=False, checkpoint_interval = 10,
         checkpoint_generation = None):
         """ Runs NEAT's genetic algorithm for n epochs.
+
+            Keyword arguments:
+            report -- show stats at each epoch (default True)
+            save_best -- save the best chromosome from each epoch (default False)
+            checkpoint_interval -- time in minutes between saving checkpoints (default 10 minutes)
+            checkpoint_generation -- time in generations between saving checkpoints
+                (default 0 -- option disabled)
+        """
+        t0 = time.time() # for saving checkpoints
+
+        for g in xrange(n):
+            self.__generation += 1
+
+            if report: print '\n ****** Running generation %d ****** \n' % self.__generation
+
+            # Evaluate individuals
+            self.evaluate()
+            # Speciates the population
+            self.__speciate(report)
+
+            # Current generation's best chromosome
+            self.__best_fitness.append(max(self.__population))
+            # Current population's average fitness
+            self.__avg_fitness.append(self.average_fitness())
+
+            # Print some statistics
+            best = self.__best_fitness[-1]
+            # Which species has the best chromosome?
+            for s in self.__species:
+                s.hasBest = False
+                if best.species_id == s.id:
+                    s.hasBest = True
+
+            # saves the best chromo from the current generation
+            if save_best:
+                file = open('best_chromo_'+str(self.__generation),'w')
+                pickle.dump(best, file)
+                file.close()
+
+            # Stops the simulation
+            if best.fitness > Config.max_fitness_threshold:
+                print '\nBest individual found in epoch %s - complexity: %s' %(self.__generation, best.size())
+                break
+
+            #-----------------------------------------
+            # Prints chromosome's parents id:  {dad_id, mon_id} -> child_id
+            #for chromosome in self.__population:
+            #    print '{%3d; %3d} -> %3d' %(chromosome.parent1_id, chromosome.parent2_id, chromosome.id)
+            #-----------------------------------------
+
+
+            # Remove stagnated species and its members (except if it has the best chromosome)
+            for s in self.__species[:]:
+                if s.no_improvement_age > Config.max_stagnation:
+                    if not s.hasBest:
+                        if report:
+                            print "\n   Species %2d (with %2d individuals) is stagnated: removing it" \
+                                    %(s.id, len(s))
+                        # removing species
+                        self.__species.remove(s)
+                        # removing all the species' members
+                        #TODO: can be optimized!
+                        for c in self.__population[:]:
+                            if c.species_id == s.id:
+                                self.__population.remove(c)
+
+            # Remove "super-stagnated" species (even if it has the best chromosome)
+            # It is not clear if it really avoids local minima
+            for s in self.__species[:]:
+                if s.no_improvement_age > 2*Config.max_stagnation:
+                    if report:
+                        print "\n   Species %2d (with %2d individuals) is super-stagnated: removing it" \
+                                %(s.id, len(s))
+                    # removing species
+                    self.__species.remove(s)
+                    # removing all the species' members
+                    #TODO: can be optimized!
+                    for c in self.__population[:]:
+                        if c.species_id == s.id:
+                            self.__population.remove(c)
+
+            # Compute spawn levels for each remaining species
+            self.__compute_spawn_levels()
+
+            # Removing species with spawn amount = 0
+            for s in self.__species[:]:
+                # This rarely happens
+                if s.spawn_amount == 0:
+                    if report:
+                        print '   Species %2d age %2s removed: produced no offspring' %(s.id, s.age)
+                    for c in self.__population[:]:
+                        if c.species_id == s.id:
+                            self.__population.remove(c)
+                                #self.remove(c)
+                    self.__species.remove(s)
+
+            # Logging speciation stats
+            self.__log_species()
+
+            if report:
+                #print 'Poluation size: %d \t Divirsity: %s' %(len(self), self.__population_diversity())
+                print 'Population\'s average fitness: %3.5f stdev: %3.5f' %(self.__avg_fitness[-1], self.stdeviation())
+                print 'Best fitness: %2.12s - size: %s - species %s - id %s' \
+                    %(best.fitness, best.size(), best.species_id, best.id)
+
+                # print some "debugging" information
+                print 'Species length: %d totalizing %d individuals' \
+                        %(len(self.__species), sum([len(s) for s in self.__species]))
+                print 'Species ID       : %s' % [s.id for s in self.__species]
+                print 'Each species size: %s' % [len(s) for s in self.__species]
+                print 'Amount to spawn  : %s' % [s.spawn_amount for s in self.__species]
+                print 'Species age      : %s' % [s.age for s in self.__species]
+                print 'Species no improv: %s' % [s.no_improvement_age for s in self.__species] # species no improvement age
+
+                #for s in self.__species:
+                #    print s
+
+            # -------------------------- Producing new offspring -------------------------- #
+            new_population = [] # next generation's population
+
+            # Spawning new population
+            for s in self.__species:
+                new_population.extend(s.reproduce())
+
+            # ----------------------------#
+            # Controls under or overflow  #
+            # ----------------------------#
+            fill = (self.__popsize) - len(new_population)
+            if fill < 0: # overflow
+                if report: print '   Removing %d excess individual(s) from the new population' %-fill
+                # TODO: This is dangerous! I can't remove a species' representant!
+                new_population = new_population[:fill] # Removing the last added members
+
+            if fill > 0: # underflow
+                if report: print '   Producing %d more individual(s) to fill up the new population' %fill
+
+                # TODO:
+                # what about producing new individuals instead of reproducing?
+                # increasing diversity from time to time might help
+                while fill > 0:
+                    # Selects a random chromosome from population
+                    parent1 = random.choice(self.__population)
+                    # Search for a mate within the same species
+                    found = False
+                    for c in self:
+                        # what if c is parent1 itself?
+                        if c.species_id == parent1.species_id:
+                            child = parent1.crossover(c)
+                            new_population.append(child.mutate())
+                            found = True
+                            break
+                    if not found:
+                        # If no mate was found, just mutate it
+                        new_population.append(parent1.mutate())
+                    #new_population.append(chromosome.FFChromosome.create_fully_connected())
+                    fill -= 1
+
+            assert self.__popsize == len(new_population), 'Different population sizes!'
+            # Updates current population
+            self.__population = new_population[:]
+
+            if checkpoint_interval is not None and time.time() > t0 + 60*checkpoint_interval:
+                self.__create_checkpoint(report)
+                t0 = time.time() # updates the counter
+            elif checkpoint_generation is not None and self.__generation % checkpoint_generation == 0:
+                self.__create_checkpoint(report)
+
+    def epoch_parasite(self, n, report=True, save_best=False, checkpoint_interval = 10,
+        checkpoint_generation = None):
+        """ Runs NEAT's genetic algorithm for n epochs evolving the parasites, not the hosts.
 
             Keyword arguments:
             report -- show stats at each epoch (default True)

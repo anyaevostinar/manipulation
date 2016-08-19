@@ -41,7 +41,7 @@ def eval_individual(chromo, logFP=None):
     
     PARASITES: Parasites have now been introduced and they are the ones evolving.
     The host is held constant and the parasite is evaluated based on how close its host is
-    to the position 0, 0 by the end of the time.
+    to the position 0, 0 by the time the host runs out of energy (that could complicate things, try making it a set time).
     """
     brain = nn.create_ffphenotype(chromo)
 
@@ -54,6 +54,7 @@ def eval_individual(chromo, logFP=None):
     numTrials = 3
     foodEaten = 0
     total_distance = 0
+    points = 0
     for trial in range(numTrials):
         energy = initEnergy
         # randomly position robot
@@ -80,8 +81,8 @@ def eval_individual(chromo, logFP=None):
             else:
                 warning = 0.0
             ins = adaptRobot.light[0].value + [warning]
-            #this needs to actually be the number of input nodes but.....
-            parasite_manip = parasite.sactivate([0]*3)
+          
+            parasite_manip = parasite.sactivate([0] * brain.num_inputs)
 
             #make a dictionary of manipulation values to make things easier
             parasite_dict = {}
@@ -111,8 +112,19 @@ def eval_individual(chromo, logFP=None):
                 break
             sim.step(run=0) # update the simulator directly
         if logFP: logFP.write("Trial ended\n")
-        #total_distance += #TODO: calculate distance robot is from 0,0 and reward parasite for being close
-          #TODO: figure out how to get the location of the robot
+        
+
+        #Find out where the host currently is
+        coordinates = adaptRobot.simulation[0].getPose(0)
+        print coordinates
+        if coordinates[0] == 0 and coordinates[1] == 0:
+          #if parasite got host to 0, 0 it gets rewarded for how fast it did so
+          points += 50 - steps
+        else:
+          #if parasite didn't get host to 0, 0 it gets rewarded for how close it got
+          points += (50 - (coordinates[0] + coordinates[1]))
+
+
           #TODO: change the tournament selection to work based on parasite fitness and spread parasite horizontally
 
     adaptRobot.stop()
@@ -121,8 +133,10 @@ def eval_individual(chromo, logFP=None):
     if logFP: logFP.write("Survived %d steps, ate %d food\n" % \
                           (steps, foodEaten))
 
-    parasite_fitness =
-    return steps/maxSteps
+
+
+
+    return points
 
 # instantiate the simulator directly and set run to 0
 sim = TkSimulator((441,434), (22,420), 40.357554, run=0)  
@@ -157,9 +171,10 @@ def main():
     # Start the evolutionary process
     population.Population.evaluate = eval_fitness
 
-    pop = population.Population("checkpoint_10")
+    pop = population.Population("best_chromo_10")
     start = time.time()
     generations = 11
+    ##TODO: figure out where selection is happening and change it to select based on parasite instead of host
     pop.epoch(generations, report=True, save_best=True, \
               checkpoint_interval=None, checkpoint_generation=5)
     stop = time.time()

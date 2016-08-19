@@ -111,6 +111,7 @@ class Network(object):
         self.__neurons = neurons
         self.__synapses = []
         self._num_inputs = num_inputs
+        self.num_inputs = num_inputs
         self.num_neurons = len(self.__neurons)
 
 

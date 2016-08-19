@@ -49,9 +49,9 @@ class HostChromosome(Chromosome):
         return cls._id
 
     def mutate(self):
-        """ Mutates this chromosome """
+        """ Mutates this chromosome's parasite! """
 
-        r = random.random
+        '''r = random.random
         if r() < Config.prob_addnode:
             self._mutate_add_node()
 
@@ -63,12 +63,14 @@ class HostChromosome(Chromosome):
                 cg.mutate() # mutate weights
             for ng in self._node_genes[self._input_nodes:]:
                 ng.mutate() # mutate bias, response, and etc...
-
+        '''
+        self.parasite_chrom.mutate()
         return self
 
 
     def crossover(self, other):
-        """ Crosses over parents' chromosomes and returns a child. """
+        """ Crosses over parents' chromosomes and returns a child.
+        Hosts sadly don't get to have children because they aren't evolving, their parasites are! """
 
         # This can't happen! Parents must belong to the same species.
         assert self.species_id == other.species_id, 'Different parents species ID: %d vs %d' \
@@ -84,11 +86,15 @@ class HostChromosome(Chromosome):
 
         # creates a new child
         child = self.__class__(self.id, other.id, self._node_gene_type, self._conn_gene_type)
+        parasite = self.parasite_chrom.__class__(self.id, other.id, self._node_gene_type, self._conn_gene_type)
 
         child._inherit_genes(parent1, parent2)
+        parasite._inherit_genes(parent1.parasite_chrom, parent2.parasite_chrom)
 
         child.species_id = parent1.species_id
         #child._input_nodes = parent1._input_nodes
+        paraste.species_id = parent1.parasite_chrom.species_id
+        child.parasite_chrom = parasite
 
         return child
 
@@ -157,12 +163,14 @@ class HostChromosome(Chromosome):
     # compatibility function
     def distance(self, other):
         """ Returns the distance between this chromosome and the other. """
-        if len(self._connection_genes) > len(other._connection_genes):
-            chromo1 = self
-            chromo2 = other
+        first = self.parasite_chrom
+        second = other.parasite_chrom
+        if len(first._connection_genes) > len(second._connection_genes):
+            chromo1 = first
+            chromo2 = second
         else:
-            chromo1 = other
-            chromo2 = self
+            chromo1 = second
+            chromo2 = first
 
         weight_diff = 0
         matching = 0

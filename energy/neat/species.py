@@ -116,7 +116,7 @@ class Species(object):
 
             self.spawn_amount -= 1
 
-            if len(self) > 1:
+            '''if len(self) > 1:
                 # Selects two parents from the remaining species and produces a single individual
                 # Stanley selects at random, here we use tournament selection (although it is not
                 # clear if has any advantages)
@@ -126,12 +126,14 @@ class Species(object):
                 assert parent1.species_id == parent2.species_id, "Parents has different species id."
                 child = parent1.crossover(parent2)
                 offspring.append(child.mutate())
-            else:
-                # mutate only
-                parent1 = self.__subpopulation[0]
-                # TODO: temporary hack - the child needs a new id (not the father's)
-                child = parent1.crossover(parent1)
-                offspring.append(child.mutate())
+            else:'''
+            # mutate only
+            #I'm not a fan of crossover with parasites, doesn't really make sense, so only mutation
+            parent1 = self.__subpopulation[0]
+            # TODO: temporary hack - the child needs a new id (not the parent's)
+                
+            child = parent1.crossover(parent1)
+            offspring.append(child.mutate())
 
         # reset species (new members will be added again when speciating)
         self.__subpopulation = []
